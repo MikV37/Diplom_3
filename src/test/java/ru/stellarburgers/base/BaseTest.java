@@ -14,7 +14,6 @@ public abstract class BaseTest {
 
     @Before
     public void setUp() {
-
         String browser = System.getProperty("browser", "chrome");
 
         if ("yandex".equals(browser)) {

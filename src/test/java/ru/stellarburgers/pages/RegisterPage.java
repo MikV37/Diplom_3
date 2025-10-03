@@ -1,18 +1,13 @@
 package ru.stellarburgers.pages;
 
 import io.qameta.allure.Step;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.time.Duration;
 
 public class RegisterPage {
-    private WebDriver driver;
+    private final WebDriver driver;
 
     @FindBy(xpath = ".//label[text()='Имя']/../input")
     private WebElement nameField;
@@ -49,17 +44,13 @@ public class RegisterPage {
         registerButton.click();
     }
 
-    public boolean isPasswordErrorVisible() {
-        return passwordErrorMessage.isDisplayed();
-    }
-
     @Step("Клик по ссылке 'Войти'")
     public LoginPage clickLoginLink() {
         loginLink.click();
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(".//h2[text()='Вход']")));
-
         return new LoginPage(driver);
+    }
+
+    public boolean isPasswordErrorVisible() {
+        return passwordErrorMessage.isDisplayed();
     }
 }

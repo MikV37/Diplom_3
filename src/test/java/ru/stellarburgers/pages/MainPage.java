@@ -1,13 +1,18 @@
 package ru.stellarburgers.pages;
 
 import io.qameta.allure.Step;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.TimeoutException;
+import java.time.Duration;
 
 public class MainPage {
-    private WebDriver driver;
+    private final WebDriver driver;
 
     @FindBy(xpath = ".//button[text()='Войти в аккаунт']")
     private WebElement loginButton;
@@ -27,24 +32,15 @@ public class MainPage {
     @FindBy(xpath = ".//span[text()='Начинки']")
     private WebElement fillingsTab;
 
-    @FindBy(xpath = ".//h2[text()='Булки']")
-    private WebElement bunsHeader;
-
-    @FindBy(xpath = ".//h2[text()='Соусы']")
-    private WebElement saucesHeader;
-
-    @FindBy(xpath = ".//h2[text()='Начинки']")
-    private WebElement fillingsHeader;
-
-
     public MainPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
     }
 
     @Step("Клик по кнопке 'Войти в аккаунт'")
-    public void clickLoginButton() {
+    public LoginPage clickLoginButton() {
         loginButton.click();
+        return new LoginPage(driver);
     }
 
     @Step("Клик по кнопке 'Личный кабинет'")
@@ -73,14 +69,33 @@ public class MainPage {
     }
 
     public boolean isBunsSectionActive() {
-        return bunsHeader.isDisplayed();
+        try {
+            // Мы будем ждать до 3 секунд, пока у вкладки не появится нужный класс
+            new WebDriverWait(driver, Duration.ofSeconds(3))
+                    .until(ExpectedConditions.attributeContains(bunsTab.findElement(By.xpath("./..")), "class", "tab_tab_type_current__2BEPc"));
+            return true; // Если дождались — возвращаем true
+        } catch (TimeoutException e) {
+            return false; // Если за 3 секунды класс не появился — возвращаем false
+        }
     }
 
     public boolean isSaucesSectionActive() {
-        return saucesHeader.isDisplayed();
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(3))
+                    .until(ExpectedConditions.attributeContains(saucesTab.findElement(By.xpath("./..")), "class", "tab_tab_type_current__2BEPc"));
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
     }
 
     public boolean isFillingsSectionActive() {
-        return fillingsHeader.isDisplayed();
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(3))
+                    .until(ExpectedConditions.attributeContains(fillingsTab.findElement(By.xpath("./..")), "class", "tab_tab_type_current__2BEPc"));
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
     }
 }

@@ -2,7 +2,11 @@ package ru.stellarburgers.tests;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import ru.stellarburgers.base.BaseTest;
 import ru.stellarburgers.pages.LoginPage;
@@ -11,25 +15,45 @@ import ru.stellarburgers.pages.RegisterPage;
 
 public class RegistrationTests extends BaseTest {
 
+    private UserClient userClient;
+    private User user;
+    private String accessToken;
+
+    @Before
+    public void setUpClient() {
+        RestAssured.baseURI = Endpoints.BASE_URL;
+        userClient = new UserClient();
+    }
+
+    @After
+    public void tearDown() {
+        if (accessToken != null) {
+            userClient.delete(accessToken);
+        }
+        super.tearDown();
+    }
+
     @Test
     @DisplayName("Успешная регистрация пользователя")
     @Description("Проверяем, что пользователь с корректными данными может успешно зарегистрироваться.")
     public void successfulRegistrationTest() {
         MainPage mainPage = new MainPage(driver);
-
         LoginPage loginPage = mainPage.clickPersonalAccountButton();
         RegisterPage registerPage = loginPage.clickRegisterLink();
 
-        String name = "TestUser";
-        String email = "testuser" + System.currentTimeMillis() + "@test.com";
-        String password = "password123";
+        user = User.getRandomUser();
 
-        registerPage.fillRegistrationForm(name, email, password);
+        registerPage.fillRegistrationForm(user.getName(), user.getEmail(), user.getPassword());
         registerPage.clickRegisterButton();
 
         LoginPage finalLoginPage = new LoginPage(driver);
         Assert.assertTrue("Не произошел переход на страницу входа после регистрации",
                 finalLoginPage.isLoginHeaderVisible());
+
+        Response loginResponse = userClient.login(user);
+        if(loginResponse.statusCode() == 200) {
+            accessToken = loginResponse.jsonPath().getString("accessToken");
+        }
     }
 
     @Test
@@ -37,11 +61,11 @@ public class RegistrationTests extends BaseTest {
     @Description("Проверяем, что при вводе пароля короче 6 символов появляется ошибка.")
     public void registrationWithShortPasswordTest() {
         MainPage mainPage = new MainPage(driver);
-
         LoginPage loginPage = mainPage.clickPersonalAccountButton();
         RegisterPage registerPage = loginPage.clickRegisterLink();
 
-        registerPage.fillRegistrationForm("TestUser", "email@test.com", "123");
+        User randomUser = User.getRandomUser();
+        registerPage.fillRegistrationForm(randomUser.getName(), randomUser.getEmail(), "12345");
         registerPage.clickRegisterButton();
 
         Assert.assertTrue("Сообщение об ошибке для некорректного пароля не отображается",

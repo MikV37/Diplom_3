@@ -1,14 +1,17 @@
 package ru.stellarburgers.pages;
 
-
 import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class LoginPage {
-    private WebDriver driver;
+    private final WebDriver driver;
 
     @FindBy(xpath = ".//h2[text()='Вход']")
     private WebElement loginHeader;
@@ -31,8 +34,9 @@ public class LoginPage {
     public LoginPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.visibilityOf(loginHeader));
     }
-
 
     @Step("Клик по ссылке 'Зарегистрироваться'")
     public RegisterPage clickRegisterLink() {
@@ -40,8 +44,10 @@ public class LoginPage {
         return new RegisterPage(driver);
     }
 
-    public boolean isLoginHeaderVisible() {
-        return loginHeader.isDisplayed();
+    @Step("Клик по ссылке 'Восстановить пароль'")
+    public ForgotPasswordPage clickForgotPasswordLink() {
+        forgotPasswordLink.click();
+        return new ForgotPasswordPage(driver);
     }
 
     @Step("Авторизация пользователя с email: {email} и паролем: {password}")
@@ -52,9 +58,7 @@ public class LoginPage {
         return new MainPage(driver);
     }
 
-    @Step("Клик по ссылке 'Восстановить пароль'")
-    public ForgotPasswordPage clickForgotPasswordLink() {
-        forgotPasswordLink.click();
-        return new ForgotPasswordPage(driver);
+    public boolean isLoginHeaderVisible() {
+        return loginHeader.isDisplayed();
     }
 }
