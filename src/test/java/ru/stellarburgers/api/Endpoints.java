@@ -1,4 +1,4 @@
-package ru.stellarburgers.tests;
+package ru.stellarburgers.api;
 
 public class Endpoints {
     public static final String BASE_URL = "https://stellarburgers.nomoreparties.site";

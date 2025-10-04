@@ -2,13 +2,14 @@ package ru.stellarburgers.pages;
 
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.TimeoutException;
+
 import java.time.Duration;
 
 public class MainPage {
@@ -70,12 +71,11 @@ public class MainPage {
 
     public boolean isBunsSectionActive() {
         try {
-            // Мы будем ждать до 3 секунд, пока у вкладки не появится нужный класс
             new WebDriverWait(driver, Duration.ofSeconds(3))
                     .until(ExpectedConditions.attributeContains(bunsTab.findElement(By.xpath("./..")), "class", "tab_tab_type_current__2BEPc"));
-            return true; // Если дождались — возвращаем true
+            return true;
         } catch (TimeoutException e) {
-            return false; // Если за 3 секунды класс не появился — возвращаем false
+            return false;
         }
     }
 

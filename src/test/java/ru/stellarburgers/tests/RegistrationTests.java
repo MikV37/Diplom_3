@@ -8,6 +8,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import ru.stellarburgers.api.Endpoints;
+import ru.stellarburgers.api.User;
+import ru.stellarburgers.api.UserClient;
 import ru.stellarburgers.base.BaseTest;
 import ru.stellarburgers.pages.LoginPage;
 import ru.stellarburgers.pages.MainPage;
@@ -51,9 +54,8 @@ public class RegistrationTests extends BaseTest {
                 finalLoginPage.isLoginHeaderVisible());
 
         Response loginResponse = userClient.login(user);
-        if(loginResponse.statusCode() == 200) {
-            accessToken = loginResponse.jsonPath().getString("accessToken");
-        }
+        Assert.assertEquals("API Логин после UI регистрации не удался. Пользователь не будет удален.", 200, loginResponse.statusCode());
+        accessToken = loginResponse.jsonPath().getString("accessToken");
     }
 
     @Test

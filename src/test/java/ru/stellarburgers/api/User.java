@@ -1,4 +1,4 @@
-package ru.stellarburgers.tests;
+package ru.stellarburgers.api;
 
 import com.github.javafaker.Faker;
 import lombok.AllArgsConstructor;
